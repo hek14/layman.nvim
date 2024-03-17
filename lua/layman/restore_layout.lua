@@ -13,12 +13,15 @@ end
 
 
 local only_keep_first_winnr = function()
-    local cur_win = winnr_to_winid(1)
-    assert(cur_win)
+    local cur_win = nil
     local wins = vim.api.nvim_list_wins()
     for _, window_id in ipairs(wins) do
         local config = vim.api.nvim_win_get_config(window_id)
-        if(config.relative == "" and window_id ~= cur_win) then
+        if(not cur_win and config.relative == "") then
+          cur_win = window_id
+        end
+
+        if(cur_win and window_id ~= cur_win) then
             vim.api.nvim_win_close(window_id, true)
         end
     end
