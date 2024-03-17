@@ -55,13 +55,12 @@ function layout_manager.setup(opts)
     }
   }
 
-  opts = vim.tbl_deep_extend("force", opts or {}, default_opts)
-  for _, v in pairs(opts.keymap) do
-    if(not type(v) == "table") then
-      opts.keymap.k = { v }
+  opts = vim.tbl_deep_extend("force", default_opts, opts or {})
+  for k, v in pairs(opts.keymap) do
+    if(type(v) == "string") then
+      opts.keymap[k] = { v }
     end
   end
-  vim.print(opts)
 
   -- commands
   vim.api.nvim_create_user_command('SaveLayout',function()
