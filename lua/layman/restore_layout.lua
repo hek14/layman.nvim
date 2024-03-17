@@ -94,8 +94,7 @@ local function set_each_win(data)
             vim.api.nvim_win_set_buf(winId, bufnr)
         end
 
-        vim.api.nvim_win_set_cursor(winId, data[i].cursor)
-        -- pcall(function() vim.api.nvim_win_set_cursor(winId, data[i].cursor) end)
+        pcall(function() vim.api.nvim_win_set_cursor(winId, data[i].cursor) end) -- NOTE:the cursor may be outside of the file
 
     end
 end
