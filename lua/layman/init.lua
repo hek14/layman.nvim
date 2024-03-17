@@ -15,13 +15,13 @@ local layout_manager = {
 local equal
 equal = function(tree1, tree2)
   local check_keys = {"split", "method", "isleaf", "winnr", "file"}
-  for i, k in ipairs(check_keys) do
+  for _, k in ipairs(check_keys) do
     if(tree1[k]~=tree2[k]) then
       log(f("k: %s not equal", k))
       return false
     end
   end
- 
+
   if(not tree1.childs and not tree2.childs) then
     return true
 
@@ -46,7 +46,23 @@ equal = function(tree1, tree2)
 
 end
 
-function layout_manager.setup(opt)
+function layout_manager.setup(opts)
+  local default_opts = {
+    keymap = {
+      last = {"<leader>wl"},
+      save = {"<leader>ws"},
+      restore = {"<leader>wr"},
+    }
+  }
+
+  opts = vim.tbl_deep_extend("force", opts or {}, default_opts)
+  for _, v in pairs(opts.keymap) do
+    if(not type(v) == "table") then
+      opts.keymap.k = { v }
+    end
+  end
+  vim.print(opts)
+
   -- commands
   vim.api.nvim_create_user_command('SaveLayout',function()
     local cur = get_layout()
@@ -64,6 +80,14 @@ function layout_manager.setup(opt)
     local last = layout_manager.layouts:front()
     set_layout(last)
 
+  end, { nargs = '*', bang = true,  desc = 'Run session manager command' })
+
+  vim.api.nvim_create_user_command('LastLayout', function()
+    local count = vim.v.count
+    count = count == 0 and 1 or count
+    layout_manager.layouts:visit(count + 1) -- NOTE: move the last layout to head
+    local last = layout_manager.layouts:front()
+    set_layout(last)
   end, { nargs = '*', bang = true,  desc = 'Run session manager command' })
 
   local cur_layout = get_layout()
@@ -92,16 +116,16 @@ function layout_manager.setup(opt)
     end)
   })
 
-  vim.keymap.set("n", "<C-w>l", function()
-    local count = vim.v.count
-    count = count == 0 and 1 or count
-
-    layout_manager.layouts:visit(count + 1) -- NOTE: move the last layout to head
-    local last = layout_manager.layouts:front()
-    set_layout(last)
-
-  end, { desc = "Restore last layout" })
-
+  -- keymap
+  for _, key in ipairs(opts.keymap.last) do
+    vim.keymap.set("n", key, "<cmd>LastLayout<cr>", { desc = "Go back to the last layout" })
+  end
+  for _, key in ipairs(opts.keymap.restore) do
+    vim.keymap.set("n", key, "<cmd>RestoreLayout<cr>", { desc = "Restore the saved layout" })
+  end
+  for _, key in ipairs(opts.keymap.save) do
+    vim.keymap.set("n", key, "<cmd>SaveLayout<cr>", { desc = "Save the current layout" })
+  end
 
 end
 
