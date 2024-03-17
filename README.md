@@ -32,3 +32,7 @@ You can customize it by:
     }
   })
 ```
+
+# Limitation
+- [ ] handle floating windows
+- [ ] handle buffer that don't have attached file
