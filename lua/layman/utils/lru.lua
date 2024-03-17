@@ -41,7 +41,7 @@ function Lru:move_to_head(k)
   self:insert_head(k)
 end
 
-function Lru:insert_data(v)
+function Lru:push(v)
   if(self:size() >= self.capacity) then
     -- print("should delete the least used node")
     self:delete_node(self.l[self.tail])
@@ -97,6 +97,19 @@ function Lru:size()
   return cnt
 end
 
+function Lru:find(item)
+  local st = self.r[self.head]
+  local cnt = 0
+  while(st ~= self.tail) do
+    cnt = cnt + 1
+    if(vim.deep_equal(item, self.e[st])) then
+      return cnt
+    end
+    st = self.r[st]
+  end
+  return -1
+end
+
 function Lru:visit(k)
   -- this k is not the internal idx!!! this is the kth node for iteration
   local cnt = 0
@@ -128,10 +141,10 @@ end
 
 -- Test
 -- local t = Lru:new()
--- t:insert_data({winnr = 1, childs = {2, 3}})
--- t:insert_data({winnr = 2, childs = {4, 5}})
--- t:insert_data({winnr = 3, childs = {6, 7}})
--- t:insert_data({winnr = 4, childs = {8}})
+-- t:push({winnr = 1, childs = {2, 3}})
+-- t:push({winnr = 2, childs = {4, 5}})
+-- t:push({winnr = 3, childs = {6, 7}})
+-- t:push({winnr = 4, childs = {8}})
 -- vim.print(t:iterate()) -- 4, 3, 2
 --
 -- print("--------------")
