@@ -79,11 +79,18 @@ local bfs_layout_tree = function(root)
 end
 
 local function set_each_win(data)
+    local layout = require("layman.save_layout").get_layout()
+
+    assert(#layout.data == #data, "Current layout not equal to target layout")
+    local final_win = nil
     for i = 1, #data do
         local winnr = i
         local winId = winnr_to_winid(winnr)
         assert(winId ~= nil)
         assert (data[i].winnr == winnr, f("%s vs %s", data[i].winnr, winnr))
+        if(data[i].current) then
+            final_win = winId
+        end
         local file = data[i].file
         if(vim.fn.filereadable(file)) then
             local bufnr = vim.fn.bufadd(file) -- TODO:if the buffer does not attach to any file, like NvimTree, need to hand these
@@ -97,6 +104,8 @@ local function set_each_win(data)
         pcall(function() vim.api.nvim_win_set_cursor(winId, data[i].cursor) end) -- NOTE:the cursor may be outside of the file
 
     end
+    assert(final_win~=nil)
+    vim.api.nvim_set_current_win(final_win)
 end
 
 local restore_layout = function(layout)

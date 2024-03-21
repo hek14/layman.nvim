@@ -97,6 +97,7 @@ function M.get_layout()
         end
     end
 
+    table.sort(wins, function(a, b) return a.winnr < b.winnr end)
     local tree = build_layout_tree(wins)
 
     return {
