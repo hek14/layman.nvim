@@ -11,9 +11,11 @@ local debounce = function(func)
         timer = vim.uv.new_timer()
         timer:start(delay, 0, vim.schedule_wrap(function()
             func()
-            timer:stop()
-            timer:close()
-            timer = nil
+            if timer then
+              timer:stop()
+              timer:close()
+              timer = nil
+            end
         end))
     end
 end
