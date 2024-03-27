@@ -46,7 +46,22 @@ equal = function(tree1, tree2)
 
 end
 
+local function checkNeovimVersion()
+  local nvim_version = vim.version()
+  if nvim_version.minor < 10 then
+    vim.notify("You are using Neovim version " .. nvim_version.major .. "." .. nvim_version.minor .. ", which is older than the recommended version 0.10.", vim.log.levels.WARN)
+    return false
+  else
+    return true
+  end
+end
+
+
 function layout_manager.setup(opts)
+  if(not checkNeovimVersion()) then
+    return
+  end
+
   local default_opts = {
     keymap = {
       last = {"<leader>wl"},

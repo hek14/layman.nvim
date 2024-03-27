@@ -1,3 +1,6 @@
+# Note
+This plugin requires `nvim 0.10` or `nvim nightly` to work.
+
 # Motivation
 Sometimes there will be multiple splits opened. 
 
